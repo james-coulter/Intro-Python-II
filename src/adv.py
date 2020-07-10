@@ -1,4 +1,5 @@
 import textwrap
+from item import Item
 from room import Room
 from player import Player
 
@@ -35,52 +36,91 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+
+items = {'coin': Item('A Coin', 'Gold coin worth 1.'),
+'candle': Item('A Candle', 'A small candle. Maybe I can find a way to light it.')}
+room['outside'].add_items(items['coin'])
+room['foyer'].add_items(items['coin'])
+room['overlook'].add_items(items['candle'])
+
+name = input('Welcome to the beginning of your story, Adventurer. What is your name? ')
+player = Player(name, room['outside'])
+
+
+print(f'Welcome {name}. Your story begins from an {player.current_room} \n')
+print(room['outside'].show_items())
+
+# quit = True
 #
-# Main
+# adventure = int(input("Would you like to go on an adventure? 1 - Yes or 2 - No"))
 #
-
-# Make a new player object that is currently in the 'outside' room.
-player = Player('James', room['outside'])
-# Write a loop that:
+# if adventure == 1:
+#     quit = False
+# else:
+#     quit = True
 #
-# * Prints the current room name
-# * Prints the current description (the textwrap module might be useful here).
-# * Waits for user input and decides what to do.
-#
+# def wrong_input():
+#     print("I'm sorry, I dont' understand that command.")
 
+while True:
+    action = input(f'What should you do? (n for North, s for South, e for East, w for West, take to Pickup item, drop to Drop, q to Quit) \n')
 
-quit = True
+    if action == 'n' or action == 'N':
+        next_move = player.current_room.n_to
+        if next_move == None:
+            print("Can't go that way. Try a different direction.")
+        else:
+            player = Player(name, next_move)
 
-adventure = int(input("Would you like to go on an adventure? 1 - Yes or 2 - No"))
+            print(player)
+            print(player.current_room.show_items())
 
-if adventure == 1:
-    quit = False
-else:
-    quit = True
+    elif action == 's' or action == 'S':
+        next_move = player.current_room.s_to
+        if next_move == None:
+            print("Can't go that way. Try a different direction.")
+        else:
+            player = Player(name, next_move)
+            print(player)
+            print(player.current_room.show_items())
 
-def wrong_input():
-    print("I'm sorry, I dont' understand that command.")
+    elif action == 'e' or action == 'E':
+        next_move = player.current_room.e_to
+        if next_move == None:
+            print("Can't go that way. Try a different direction.")
+        else:
+            player = Player(name, next_move)
+            print(player)
+            print(player.current_room.show_items())
 
-while not quit:
-    print(f'{player.name} | Your Items: ')
-    print(f'You are currently {player.location}')
-    for line in textwrap.wrap(player.location.print_description()):
-        print(line)
-    print("\n")
-    command = input("What would you like to do? n - North | e - East | s - South | w - West | q - Quit")
-    if len(command) > 2 or len(command) < 1:
-        wrong_input()
-        continue
+    elif action == 'w' or action == 'W':
+        next_move = player.current_room.w_to
+        if next_move == None:
+            print("Can't go that way. Try a different direction.")
+        else:
+            player = Player(name, next_move)
+            print(player)
+            print(player.current_room.show_items())
 
-    if command in ['n', 's', 'e', 'w']:
-        player.location = player.move_to(command, player.location)
-        continue
+    elif action == 'take' or action == 'get':
+        for item in player.current_room.items:
+            print(player.pickup_item(item))
 
-    if command in ['q']:
-        quit = True
-    else:
-        wrong_input()
-        continue
+        # print(player.inventory)
+
+    elif action == 'drop' or action == 'discard':
+        for i in player.inventory:
+            if i.name == item:
+                player.drop_item()
+
+    elif action == 'i':
+        print(player.show_inventory())
+
+    elif action == 'q' or action == 'Q':
+        sure = input("Are you sure? You'll lose all progress")
+        if sure == 'y':
+            print('Goodbye Adventurer!')
+            break
 
 
 # If the user enters a cardinal direction, attempt to move to the room there.

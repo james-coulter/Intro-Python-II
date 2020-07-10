@@ -1,19 +1,24 @@
 # Write a class to hold player information, e.g. what room they are in
 # currently.
 
+
 class Player:
-    def __init__(self, name, location):
+    def __init__(self, name, current_room):
         self.name = name
-        self.location = location
+        self.current_room = current_room
+        self.inventory = []
 
-    def move_to(self, direction, current_location):
+    def __str__(self):
+        return f'{self.current_room} \n'
 
-        attribute = direction + '_to'
+    def pickup_item(self, item):
+        self.inventory.append(item)
+        self.current_room.items.remove(item)
+        print(f'You picked up {item.name}. \n')
 
-        if hasattr(current_location, attribute):
-            return getattr(current_location, attribute)
-        print("--------------------")
-        print("That way is blocked!")
-        print("--------------------")
+    def drop_item(self, item):
+        self.current_room.items.append(item)
+        self.inventory.remove(item)
 
-        return current_location
+    def show_inventory(self):
+        print(f'You have {self.inventory} in your inventory')
